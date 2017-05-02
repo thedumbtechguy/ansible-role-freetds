@@ -1,0 +1,70 @@
+---
+
+- name: ensure freetds build dependecies are installed
+  apt: 
+    name: '{{ item }}' 
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+  with_items:
+    - autoconf
+    - automake
+    - gettext
+    - git
+    - libtool
+    - libtool-bin
+    - libltdl-dev
+    - m4
+    - pkg-config
+
+- name: create temporary build directory
+  file:
+    path: /tmp/ansible.thedumbtechguy.freetds
+    state: directory
+    mode: 0700
+  
+- name: clone git repo
+  git:
+    repo: 'https://github.com/FreeTDS/freetds.git'
+    dest: '/tmp/ansible.thedumbtechguy.freetds'
+    version: branch-1_00
+    update: no
+
+- name: run autogen.sh
+  command: sh autogen.sh
+  args:
+    chdir: '/tmp/ansible.thedumbtechguy.freetds'
+    creates: ansible.autogen
+
+- file:
+    path: '/tmp/ansible.thedumbtechguy.freetds/ansible.autogen'
+    state: touch
+  changed_when: false
+
+- name: run make
+  command: make
+  args:
+    chdir: '/tmp/ansible.thedumbtechguy.freetds'
+    creates: ansible.make
+
+- file:
+    path: '/tmp/ansible.thedumbtechguy.freetds/ansible.make'
+    state: touch
+  changed_when: false
+
+- name: run make install
+  command: make install
+  args:
+    chdir: '/tmp/ansible.thedumbtechguy.freetds'
+  become: true
+
+- name: check installation
+  command: tsql -C
+  register: _install_result
+  ignore_errors: true
+  changed_when: false
+
+- fail:
+    msg: "The installation was not successful."
+  when: "'freetds v1.0' not in _install_result.stdout"

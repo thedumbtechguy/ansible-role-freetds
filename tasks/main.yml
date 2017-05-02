@@ -1,0 +1,13 @@
+---
+
+
+- name: check for existing installation
+  command: tsql -C
+  register: _check_result
+  ignore_errors: true
+  changed_when: false
+    
+- include: freetds.yml
+  when: "'freetds v1.0' not in _check_result.stdout"
+  tags:
+    - freetds
