@@ -1,0 +1,9 @@
+---
+
+- name: configure freetds
+  template: 
+    src: 'freetds.conf.j2' 
+    dest: '/usr/local/etc/freetds.conf'
+    owner: root
+    group: root
+    mode: 0644

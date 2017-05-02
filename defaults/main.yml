@@ -1,0 +1,7 @@
+---
+
+freetds_global_config_items:
+  - { name: "tds version", value: "auto" }
+  - { name: "text size", value: "64512" }
+
+freetds_server_config_items: []

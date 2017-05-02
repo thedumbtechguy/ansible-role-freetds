@@ -7,7 +7,14 @@
   ignore_errors: true
   changed_when: false
     
-- include: freetds.yml
+- include: install.yml
   when: "'freetds v1.0' not in _check_result.stdout"
   tags:
     - freetds
+    - install
+
+- include: configure.yml
+  when: "'freetds v1.0' in _check_result.stdout"
+  tags:
+    - freetds
+    - configure
