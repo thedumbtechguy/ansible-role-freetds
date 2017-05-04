@@ -6,15 +6,15 @@
   register: _check_result
   ignore_errors: true
   changed_when: false
-    
+ 
 - include: install.yml
-  when: "'freetds v1.0' not in _check_result.stdout"
+  when: "(_check_result|failed) or ('freetds v1.0' not in _check_result.stdout)"
   tags:
     - freetds
     - install
 
 - include: configure.yml
-  when: "'freetds v1.0' in _check_result.stdout"
+  when: "(_check_result|succeeded) and ('freetds v1.0' in _check_result.stdout)"
   tags:
     - freetds
     - configure

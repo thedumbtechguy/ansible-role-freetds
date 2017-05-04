@@ -1,5 +1,6 @@
 ---
 
+
 - name: ensure freetds build dependecies are installed
   apt: 
     name: '{{ item }}' 
@@ -67,4 +68,9 @@
 
 - fail:
     msg: "The installation was not successful."
-  when: "'freetds v1.0' not in _install_result.stdout"
+  when: "(_install_result|failed) or ('freetds v1.0' not in _install_result.stdout)"
+
+- include: configure.yml
+  tags:
+    - freetds
+    - configure
